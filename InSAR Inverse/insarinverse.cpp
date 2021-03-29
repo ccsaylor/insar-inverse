@@ -821,13 +821,13 @@ std::vector<double> Fitter::GetDataDisplacementField() {
 	return displacements;
 }
 
-std::vector<double> Fitter::GetDataUncertainty() {
-	std::vector<double> uncertainty;
-	for (std::vector<std::array<double, 3> >::iterator it = data_.begin(); it != data_.end(); ++it) {
-		uncertainty.push_back(*(it->data() + 3));
-	}
-	return uncertainty;
-}
+//std::vector<double> Fitter::GetDataUncertainty() {
+//	std::vector<double> uncertainty;
+//	for (std::vector<std::array<double, 3> >::iterator it = data_.begin(); it != data_.end(); ++it) {
+//		uncertainty.push_back(*(it->data() + 3));
+//	}
+//	return uncertainty;
+//}
 
 std::vector<double> Fitter::CalcDisplacementField(System model) {
 	std::vector<double> displacements(data_.size(), 0.0);
@@ -1048,7 +1048,7 @@ System Fitter::SelectParent() {
 	return parent;
 }
 
-void Fitter::GeneticAlgorithm(bool save, std::string initial_state) {
+void Fitter::GeneticAlgorithm(bool save) {
 
 	models_.clear();
 	errors_.clear();
@@ -1078,68 +1078,68 @@ void Fitter::GeneticAlgorithm(bool save, std::string initial_state) {
 
 	std::vector<double> datadisp = this->GetDataDisplacementField();
 
-	if (!initial_state.empty()) {
-		double x_pos, y_pos, z_pos, strike_angle, dip_angle, rake_angle, seis_moment;
-		std::vector<std::array<double, 7> > initial_points;
-		std::ifstream incon(initial_state);
-		while (incon >> x_pos >> y_pos >> z_pos >> strike_angle >> dip_angle
-			   >> rake_angle >> seis_moment) {
-			initial_points.push_back({x_pos, y_pos, z_pos, strike_angle,
-				                      dip_angle, rake_angle, seis_moment});
+//	if (!initial_state.empty()) {
+//		double x_pos, y_pos, z_pos, strike_angle, dip_angle, rake_angle, seis_moment;
+//		std::vector<std::array<double, 7> > initial_points;
+//		std::ifstream incon(initial_state);
+//		while (incon >> x_pos >> y_pos >> z_pos >> strike_angle >> dip_angle
+//			   >> rake_angle >> seis_moment) {
+//			initial_points.push_back({x_pos, y_pos, z_pos, strike_angle,
+//				                      dip_angle, rake_angle, seis_moment});
+//		}
+//
+//		std::normal_distribution<double> xy_spread(0, 2);
+//		std::normal_distribution<double> z_spread(0, 0.5);
+//		std::normal_distribution<double> strike_spread(0, M_PI/6.0);
+//		std::normal_distribution<double> dip_spread(0, M_PI/24.0);
+////		std::normal_distribution rake_spread(0, 0);
+////		std::normal_distribution seism_spread(0, 1.0e8);
+//
+//		for (int i = 0; i < params_.pop_size_; i++) { //generate random first generation parents
+//
+//			model.ClearSources();
+//
+//			for (std::array<double, 7> point : initial_points) { //number of sources in each parent
+//				x_pos = point[0] + xy_spread(engine);
+//				y_pos = point[1] + xy_spread(engine);
+//				z_pos = point[2] + z_spread(engine);
+//				strike_angle = point[3] + strike_spread(engine);
+//				dip_angle = point[4] + dip_spread(engine);
+////				rake_angle = point[5] + rake_spread(engine);
+////				seis_moment = point[6] + seism_spread(engine);
+//				model.PlaceSource(x_pos, y_pos, z_pos, strike_angle,
+//	                      	  	  dip_angle, rake_angle, seis_moment);
+//			}
+//
+//			std::vector<double> modeldisp = CalcDisplacementField(model);
+//
+//			error = TestFitness(datadisp, modeldisp);
+//
+//			models_.push_back(model);
+//			errors_.push_back(error);
+//
+//		}
+//	}
+
+
+	for (int i = 0; i < params_.pop_size_; i++) { //generate random first generation parents
+
+		model.ClearSources();
+
+		for (int j = 0; j < params_.fit_num_sources_; j++) { //number of sources in each parent
+			model.PlaceSource(dist_x(engine), dist_y(engine), -dist_z(engine),
+							  strike(engine), dip(engine), 0, moment(engine));
 		}
 
-		std::normal_distribution<double> xy_spread(0, 2);
-		std::normal_distribution<double> z_spread(0, 0.5);
-		std::normal_distribution<double> strike_spread(0, M_PI/6.0);
-		std::normal_distribution<double> dip_spread(0, M_PI/24.0);
-//		std::normal_distribution rake_spread(0, 0);
-//		std::normal_distribution seism_spread(0, 1.0e8);
+		std::vector<double> modeldisp = CalcDisplacementField(model); //TODO: Must update to include rake angle
 
-		for (int i = 0; i < params_.pop_size_; i++) { //generate random first generation parents
+		error = TestFitness(datadisp, modeldisp);
 
-			model.ClearSources();
+		models_.push_back(model);
+		errors_.push_back(error);
 
-			for (std::array<double, 7> point : initial_points) { //number of sources in each parent
-				x_pos = point[0] + xy_spread(engine);
-				y_pos = point[1] + xy_spread(engine);
-				z_pos = point[2] + z_spread(engine);
-				strike_angle = point[3] + strike_spread(engine);
-				dip_angle = point[4] + dip_spread(engine);
-//				rake_angle = point[5] + rake_spread(engine);
-//				seis_moment = point[6] + seism_spread(engine);
-				model.PlaceSource(x_pos, y_pos, z_pos, strike_angle,
-	                      	  	  dip_angle, rake_angle, seis_moment);
-			}
-
-			std::vector<double> modeldisp = CalcDisplacementField(model); //TODO: Must update to include rake angle
-
-			error = TestFitness(datadisp, modeldisp);
-
-			models_.push_back(model);
-			errors_.push_back(error);
-
-		}
 	}
 
-	else {
-		for (int i = 0; i < params_.pop_size_; i++) { //generate random first generation parents
-
-			model.ClearSources();
-
-			for (int j = 0; j < params_.fit_num_sources_; j++) { //number of sources in each parent
-				model.PlaceSource(dist_x(engine), dist_y(engine), -dist_z(engine),
-								  strike(engine), dip(engine), 0, moment(engine));
-			}
-
-			std::vector<double> modeldisp = CalcDisplacementField(model); //TODO: Must update to include rake angle
-
-			error = TestFitness(datadisp, modeldisp);
-
-			models_.push_back(model);
-			errors_.push_back(error);
-
-		}
-	}
 
 	int counter = 0;
 	for (int generation = 0; generation < params_.num_generations_; generation++) {
@@ -1218,7 +1218,7 @@ void Fitter::GeneticAlgorithm(bool save, std::string initial_state) {
 
 		for (std::vector<System>::iterator it = models_.begin(); it != models_.end(); ++it) {
 
-			if (mutate(engine) < params_.chance_to_mutate_) { //TODO: Mess around with this chance
+			if (mutate(engine) < params_.chance_to_mutate_) {
 				OrientationMutation(*it);
 				LocationMutation(*it);
 			}
