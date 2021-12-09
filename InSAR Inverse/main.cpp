@@ -1,49 +1,45 @@
 #include "insarinverse.h"
+#include "okadasurface.h"
+#include "okadapointsourcesurface.h"
+#include "fitter2d.h"
 
 #include <cmath>
 #include <random>
+#include <iostream>
+#include <chrono>
 
 int main() {
 
-//	InSAR sar("SanAnd_08519_14004-007_14145-008_0260d_s01_L090HH_01.ann","SanAnd_08519_14004-007_14145-008_0260d_s01_L090HH_01.unw.grd");
-//	sar.TranslateToASCII();
-//	sar.Binner();
-//	sar.UnitConverter("binned_data.txt");
+	std::chrono::high_resolution_clock::time_point start =
+			std::chrono::high_resolution_clock::now();
 
-//	Fitter fit;
-//	fit.ImportData("converted_data.txt");
+//	InSAR::BinnerNepalQuake({"los_T048_C02_detrend.lltnde"});
+//	InSAR::UnitConverterNepalQuake("nepal_binned_75x75.txt");
 
-//	fit.LocationGeneticAlgorithm(1000);
+//	InSAR::MultiBinnerNepalQuake({"los_T048_C02_detrend.lltnde","los_T157_C01_detrend.lltnde"});
 
-//	sar.GeneratePoints();
-//	fit.OrientationGeneticAlgorithm(1000);
+	Fitter fit("nepalparams.txt", "nepal_binned_75x75_converted.txt");
+//	fit.GeneticAlgorithm(true);
+	fit.Setup();
 
-//	std::string filename = "interferogram_1.txt";
-//	DataGenerator::InterferogramGenerator(filename, 0.0, 30.0, 0.0, 10.0, -3.0, -10.0, 30, 10, 10);
-//	Fitter fit;
-//	fit.ImportData(filename);
-//	fit.BothGeneticAlgorithm(10000);
+//	Fitter fit("iranparams.txt", "iran_displacements_inc.txt");
+//	fit.SaveGreensCatalog("greens.txt");
+//	fit.MomentGA(true);
 
-//	InSAR::BinnerNepalQuake({"los_T048_POST01_detrend.lltnde","los_T048_C02_detrend.lltnde"});
-//	InSAR::UnitConverterNepalQuake("total_displacement_binned_50x50.txt");
+//	Fitter2D fit("iranparams.txt", "iran_binned.txt");
+//	Fitter2D fit("ridgecrestparams.txt", "ridgecrest_binned.txt");
+//	fit.Setup();
+//	fit.SaveGreensCatalog("greens.txt");
+//	fit.RecordFittedData();
+//	fit.MomentGA(true);
+//	fit.LocGeneticAlgorithm(true);
 
-	Fitter fit("parameters.txt", "total_displacement_binned_converted.txt");
-	fit.GeneticAlgorithm(true);
+	std::chrono::high_resolution_clock::time_point end =
+			std::chrono::high_resolution_clock::now();
 
-//	Fitter fit;
-//	fit.ImportParameters("parametertest.txt");
+	std::chrono::duration<double> diff = end - start;
 
-//	DataGenerator gen("modelanalysisparams.txt", "interferogram.txt");
-//	gen.Interferogram();
-
-//	ModelAnalysis modan("modelanalysisparams.txt", "interferogram.txt");
-//	modan.Run(50);
-//	modan.RecordStats();
-
-//	System sys;
-//	sys.PlaceSource(48.5774, 43.6555, -10.4041, 5.25892, 0.523487, 0, 8.29375e+09);
-//	modan.SensAnalysis(sys);
-//	modan.TwoDSensAnalysis(sys, 50);
+	std::cout << "Elapsed time: " << diff.count() << "s." << "\n";
 
 	return 0;
 }

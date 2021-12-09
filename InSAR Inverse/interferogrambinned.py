@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.tri as mtri
 
-filename = 'total_displacement_binned_converted.txt'
+filename = 'disptest.txt'
 data = np.genfromtxt(filename, dtype = 'float', delimiter='\t')
 #points = np.genfromtxt('sourcepoints.txt', dtype = 'float', delimiter='\t')
 

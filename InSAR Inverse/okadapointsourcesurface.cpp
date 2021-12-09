@@ -1,12 +1,6 @@
-#define _USE_MATH_DEFINES
-
 #include <cmath>
 #include <iostream>
 #include "okadapointsourcesurface.h"
-
-double lame_mu = 3.0e10; //Pa
-double lame_lambda = 3.0e10; //Pa
-double alpha = (lame_lambda + lame_mu)/(lame_lambda + 2.0*lame_mu); //unitless
 
 double cos_ (double angle) {
 	if (std::abs(cos(angle)) < 1e-8) {
