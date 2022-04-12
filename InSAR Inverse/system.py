@@ -2,6 +2,7 @@ import numpy as np
 
 class System:
 
+    #generates the point sources in a model based on the parameters imported from sourceparams
     def __init__(self, sourceparams):
         
         sx = np.linspace(sourceparams.sxmin, sourceparams.sxmax, sourceparams.nsx)

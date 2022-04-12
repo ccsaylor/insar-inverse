@@ -1,6 +1,11 @@
 import configparser
 
 class SourceParams:
+
+    #reads parameters from paramfile.ini
+    #every parameter must be included except data and source limits
+    #if no data limits are set, all of the data is used
+    #if no source limits are set, places points under the entire area of the data
     def __init__(self, paramfile, datastore):
         config = configparser.ConfigParser()
         config.read(paramfile)

@@ -4,6 +4,8 @@ from scipy.interpolate import RegularGridInterpolator
     
 class PointOkada:
 
+    #the equations used to calculate the point source interaction strengths
+    #if point source location and orientation is fixed, these only need to be calculated once
     def __init__(self, mu = 3.0e10, lam = 3.0e10):
         self.mu = mu
         self.lam = lam
